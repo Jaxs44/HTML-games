@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guess the Number Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #game-container {
+            display: none;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .grid-button {
+            width: 50px;
+            height: 50px;
+            font-size: 18px;
+        }
+        .grid-button:disabled {
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <div id="title-screen">
+        <h1>Guess the Number Game</h1>
+        <button id="start-button">Start</button>
+    </div>
+
+    <div id="game-container">
+        <h2>Guess the Secret Number</h2>
+        <p>Select a number between 1 and 10:</p>
+        <div class="grid-container">
+            <button class="grid-button" data-number="1">1</button>
+            <button class="grid-button" data-number="2">2</button>
+            <button class="grid-button" data-number="3">3</button>
+            <button class="grid-button" data-number="4">4</button>
+            <button class="grid-button" data-number="5">5</button>
+            <button class="grid-button" data-number="6">6</button>
+            <button class="grid-button" data-number="7">7</button>
+            <button class="grid-button" data-number="8">8</button>
+            <button class="grid-button" data-number="9">9</button>
+            <button class="grid-button" data-number="10">10</button>
+        </div>
+        <p id="message"></p>
+        <div id="result-buttons" style="display: none;">
+            <button id="restart-button">Restart</button>
+            <button id="quit-button">Quit</button>
+        </div>
+    </div>
+
+    <script>
+        const titleScreen = document.getElementById("title-screen");
+        const startButton = document.getElementById("start-button");
+        const gameContainer = document.getElementById("game-container");
+        const gridButtons = document.querySelectorAll(".grid-button");
+        const message = document.getElementById("message");
+        const resultButtons = document.getElementById("result-buttons");
+        const restartButton = document.getElementById("restart-button");
+        const quitButton = document.getElementById("quit-button");
+
+        let secretNumber;
+        let attempts = 0;
+        let gameEnded = false;
+
+        function generateSecretNumber() {
+            secretNumber = Math.floor(Math.random() * 10) + 1;
+        }
+
+        function showMessage(msg) {
+            message.textContent = msg;
+        }
+
+        function disableGridButtons() {
+            gridButtons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        function enableGridButtons() {
+            gridButtons.forEach(button => {
+                button.disabled = false;
+            });
+        }
+
+        function startGame() {
+            generateSecretNumber();
+            attempts = 0;
+            titleScreen.style.display = "none";
+            gameContainer.style.display = "block";
+            resultButtons.style.display = "none";
+            showMessage("");
+            enableGridButtons();
+            gameEnded = false;
+        }
+
+        function checkGuess(event) {
+            if (gameEnded) return;
+
+            const userGuess = parseInt(event.target.getAttribute("data-number"));
+
+            attempts++;
+
+            if (userGuess === secretNumber) {
+                showMessage(`Congratulations! You guessed the number ${secretNumber} in ${attempts} attempts.`);
+                disableGridButtons();
+                resultButtons.style.display = "block";
+                gameEnded = true;
+            } else if (userGuess < secretNumber) {
+                showMessage("Try a higher number.");
+            } else {
+                showMessage("Try a lower number.");
+            }
+
+            event.target.disabled = true;
+        }
+
+        function restartGame() {
+            generateSecretNumber();
+            attempts = 0;
+            enableGridButtons();
+            resultButtons.style.display = "none";
+            showMessage("");
+            gameEnded = false;
+        }
+
+        function quitGame() {
+            gameContainer.style.display = "none";
+            titleScreen.style.display = "block";
+        }
+
+        startButton.addEventListener("click", startGame);
+        gridButtons.forEach(button => {
+            button.addEventListener("click", checkGuess);
+        });
+        restartButton.addEventListener("click", restartGame);
+        quitButton.addEventListener("click", quitGame);
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Click the Disk</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+  }
+  #titleScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+  #gameScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+  }
+  .disk {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+  }
+  #blueDisk {
+    background-color: #007bff;
+  }
+  #redDisk {
+    background-color: #ff0000;
+  }
+  #score {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: white;
+    z-index: 3;
+  }
+  #timer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    color: white;
+    z-index: 3;
+  }
+  #uiBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-color: black;
+    z-index: 3;
+  }
+  #endScreen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 4;
+  }
+  #restartButton, #quitButton {
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+<div id="titleScreen">
+  <h1>Click the Disk</h1>
+  <p>Click the blue disk (+1 point) and avoid the red disk (-2 points)</p>
+  <button id="startButton">Start</button>
+</div>
+<div id="gameScreen">
+  <div id="uiBar"></div>
+  <div id="blueDisk" class="disk"></div>
+  <div id="redDisk" class="disk"></div>
+  <div id="score">Score: 0</div>
+  <div id="timer">Time: 60</div>
+</div>
+<div id="endScreen">
+  <h2>Game Over</h2>
+  <p>Final Score: <span id="finalScore">0</span></p>
+  <button id="restartButton">Restart</button>
+  <button id="quitButton">Quit</button>
+</div>
+<script>
+  const titleScreen = document.getElementById('titleScreen');
+  const gameScreen = document.getElementById('gameScreen');
+  const endScreen = document.getElementById('endScreen');
+  const startButton = document.getElementById('startButton');
+  const restartButton = document.getElementById('restartButton');
+  const quitButton = document.getElementById('quitButton');
+  const blueDisk = document.getElementById('blueDisk');
+  const redDisk = document.getElementById('redDisk');
+  const scoreElement = document.getElementById('score');
+  const timerElement = document.getElementById('timer');
+  const uiBarElement = document.getElementById('uiBar');
+  const finalScoreElement = document.getElementById('finalScore');
+
+  let timerInterval;
+  let score = 0;
+  let time = 60;
+
+  startButton.addEventListener('click', () => {
+    titleScreen.style.display = 'none';
+    gameScreen.style.display = 'flex';
+    startGame();
+  });
+
+  restartButton.addEventListener('click', () => {
+    endScreen.style.display = 'none';
+    gameScreen.style.display = 'flex';
+    score = 0;
+    time = 60;
+    updateScore();
+    updateTimer();
+    startGame();
+  });
+
+  quitButton.addEventListener('click', () => {
+    endScreen.style.display = 'none';
+    titleScreen.style.display = 'flex';
+    score = 0;
+    time = 60;
+    updateScore();
+    updateTimer();
+  });
+
+  function startGame() {
+    endScreen.style.display = 'none';
+    timerInterval = setInterval(updateTimer, 1000);
+    updateDiskPositions();
+  }
+
+  blueDisk.addEventListener('click', () => {
+    score++;
+    updateScore();
+    updateDiskPositions();
+  });
+
+  redDisk.addEventListener('click', () => {
+    score -= 2;
+    updateScore();
+    updateDiskPositions();
+  });
+
+  function updateScore() {
+    scoreElement.textContent = `Score: ${score}`;
+    finalScoreElement.textContent = score;
+  }
+
+  function updateTimer() {
+    time--;
+    timerElement.textContent = `Time: ${time}`;
+    if (time === 0) {
+      clearInterval(timerInterval);
+      showEndScreen();
+    }
+  }
+
+  function updateDiskPositions() {
+    const maxX = window.innerWidth - blueDisk.clientWidth;
+    const maxY = window.innerHeight - blueDisk.clientHeight - uiBarElement.clientHeight;
+    const minY = uiBarElement.clientHeight;
+    
+    const randomX = Math.max(0, Math.floor(Math.random() * maxX));
+    const randomY = Math.min(maxY, Math.floor(Math.random() * (maxY - minY)) + minY);
+    blueDisk.style.left = `${randomX}px`;
+    blueDisk.style.top = `${randomY}px`;
+
+    const redX = Math.max(0, Math.floor(Math.random() * maxX));
+    const redY = Math.min(maxY, Math.floor(Math.random() * (maxY - minY)) + minY);
+    redDisk.style.left = `${redX}px`;
+    redDisk.style.top = `${redY}px`;
+  }
+
+  function showEndScreen() {
+    gameScreen.style.display = 'none';
+    endScreen.style.display = 'flex';
+  }
+</script>
+</body>
+</html>

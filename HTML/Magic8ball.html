@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magic 8 Ball Game</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+  }
+  #title-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  #magic-ball-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+  }
+  #magic-ball {
+    width: 150px;
+    height: 150px;
+    background-color: #333;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  #shaker {
+    font-size: 16px;
+  }
+  #back-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff5555;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div id="title-screen">
+  <h1>Magic 8 Ball</h1>
+  <button id="start-button">Start</button>
+</div>
+<div id="magic-ball-container">
+  <button id="back-button">X</button>
+  <div id="magic-ball">
+    <p id="answer">Ask a question...</p>
+  </div>
+  <button id="shaker">Shake</button>
+</div>
+<script>
+  const answers = [
+    "It is certain.",
+    "Yes.",
+    "Reply hazy, try again.",
+    "Don't count on it.",
+    "My sources say no.",
+    "Outlook not so good.",
+    "Signs point to yes.",
+    "Cannot predict now."
+  ];
+
+  const titleScreen = document.getElementById('title-screen');
+  const startButton = document.getElementById('start-button');
+  const magicBallContainer = document.getElementById('magic-ball-container');
+  const magicBall = document.getElementById('magic-ball');
+  const answerElement = document.getElementById('answer');
+  const shakerButton = document.getElementById('shaker');
+  const backButton = document.getElementById('back-button');
+
+  startButton.addEventListener('click', () => {
+    titleScreen.style.display = 'none';
+    magicBallContainer.style.display = 'flex';
+  });
+
+  backButton.addEventListener('click', () => {
+    titleScreen.style.display = 'flex';
+    magicBallContainer.style.display = 'none';
+  });
+
+  shakerButton.addEventListener('click', () => {
+    const randomIndex = Math.floor(Math.random() * answers.length);
+    answerElement.textContent = answers[randomIndex];
+  });
+</script>
+</body>
+</html>
